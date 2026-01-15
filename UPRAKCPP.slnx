@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="UPRAKCPP/UPRAKCPP.vcxproj" Id="0e077886-d4dd-42f1-b33f-6f58ab9ff72b" />
+</Solution>
