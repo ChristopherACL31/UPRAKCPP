@@ -1,252 +1,215 @@
-﻿// UPRAKCPP.cpp : This file contains the 'main' function. Program execution begins and ends there.
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <iomanip>
+
 using namespace std;
 
-/* ===== UI ===== */
-void garis() {
-    cout << "==============================\n";
-}
-
-/* ===== DATA BARANG ===== */
-struct Barang {
-    string nama;
-    int harga;
+struct Item {
+    string nm;
+    int hrg, stk;
 };
 
-Barang daftarBarang[] = {
-    {"Aqua 600ml  :", 5000},
-    {"Roti        :", 7000},
-    {"Indomie     :", 3500},
-    {"Chitato     :", 12000},
-    {"Teh Botol   :", 6000},
-    {"Susu UHT    :", 8000}
+// Data Barang sesuai Screenshot
+Item gds[] = {
+    {"Aqua 600ml", 5000, 14}, {"Roti", 7000, 15}, {"Indomie", 3500, 40},
+    {"Chitato", 12000, 50}, {"Teh Botol", 6000, 52}, {"Susu UHT", 8000, 52}
 };
+const int JM = 6;
 
-const int JUMLAH_BARANG = 6;
-const double PPN = 0.11;
-
-/* ===== STRUK ===== */
-void cetakStruk(string nama, int idx[], int qty[], int totalItem,
-    int subtotal, int diskon, int pajak, int total,
-    int saldoAkhir) {
-
-    time_t now = time(0);
-    tm t;
-    localtime_s(&t, &now);
-
-    system("cls");
-    garis();
-    cout << "STRUK PEMBAYARAN\n";
-    garis();
-    cout << "Nama        : " << nama << endl;
-    cout << "Tanggal     : " << t.tm_mday << "/" << t.tm_mon + 1
-        << "/" << t.tm_year + 1900 << " " << t.tm_hour << ":" << t.tm_min << endl;
-
-    garis();
-    for (int i = 0; i < totalItem; i++) {
-        cout << daftarBarang[idx[i]].nama
-            << " x" << qty[i]
-            << " = Rp " << daftarBarang[idx[i]].harga * qty[i] << endl;
+// Fungsi Format Titik (Ribuan, Jutaan, dst)
+string fmt(int n) {
+    string s = to_string(n);
+    int pos = s.length() - 3;
+    while (pos > 0) {
+        s.insert(pos, ".");
+        pos -= 3;
     }
-
-    garis();
-    cout << "Subtotal    : Rp " << subtotal << endl;
-    cout << "Diskon      : Rp " << diskon << endl;
-    cout << "PPN 11%     : Rp " << pajak << endl;
-    cout << "TOTAL       : Rp " << total << endl;
-    cout << "Saldo Akhir : Rp " << saldoAkhir << endl;
-    garis();
-    cout << "TERIMA KASIH\n";
+    return s;
 }
 
-/* ===== MAIN ===== */
+string getT() {
+    time_t n = time(0);
+    tm* lt = localtime(&n);
+    char buf[50];
+    strftime(buf, sizeof(buf), "%A, %d %b %Y | %H:%M WIB", lt);
+    return string(buf);
+}
+
 int main() {
-
-    string namaPembeli = "Pembeli";
-    int saldoPembeli = 200000;
-
-    char ulangLogin;
-
-    do {
-        int menu;
-        string password;
-
+    string pembeli = "chris";
+    int sld = 603275; 
+    
+    while (true) {
         system("cls");
-        garis();
-        cout << "LOGIN\n";
-        garis();
-        cout << "1. Admin\n";
-        cout << "2. Pembeli\n";
-        garis();
-        cout << "\nPilih : ";
-        cin >> menu;
+        cout << "========================================" << endl;
+        cout << "              DAFTAR USER               " << endl;
+        cout << "----------------------------------------" << endl;
+        cout << "1    Admin" << endl;
+        cout << "2    Member" << endl;
+        cout << "========================================" << endl;
+        cout << "[0] Keluar" << endl;
+        cout << "========================================" << endl;
+        
+        string u, p;
+        cout << "\n> Username : "; cin >> u;
+        if (u == "0") break;
 
-        /* ===== LOGIN ===== */
-        if (menu != 1 && password != "admin123") {
-            cout << "Login admin gagal!\n";
-            system("pause");
-            continue;
-        }
-        if (menu != 2 && password != "pembeli123") {
-            cout << "Login pembeli gagal!\n";
-            system("pause");
-            continue;
+        if (u != "Admin" && u != "Member") {
+            cout << "\n[Error] User tidak ditemukan!" << endl;
+            system("pause"); continue; 
         }
 
-        /* ===== ADMIN ===== */
-        if (menu == 1) {
-            int pilihAdmin;
-            do {
+        cout << "> Password : "; cin >> p;
+
+        if (u == "Admin" && p == "admin123") {
+            while (true) {
                 system("cls");
-                garis();
-                cout << "MENU ADMIN\n";
-                garis();
-                cout << "1. Lihat Saldo Pembeli\n";
-                cout << "2. Top Up Saldo Pembeli\n";
-                cout << "3. Logout\n";
-                cout << "Pilih : ";
-                cin >> pilihAdmin;
-
-                if (pilihAdmin == 1) {
-                    cout << "\nSaldo Pembeli : Rp " << saldoPembeli << endl;
-                    system("pause");
+                cout << "=== MANAGEMENT STOK (ADMIN) ===" << endl;
+                cout << left << setw(4) << "No" << setw(18) << "Item" << "Stok" << endl;
+                for (int i = 0; i < JM; i++) 
+                    cout << left << setw(4) << i+1 << setw(18) << gds[i].nm << gds[i].stk << endl;
+                cout << "----------------------------------------" << endl;
+                cout << "[0] Log Out\n> Pilih No Barang: ";
+                int pil, tmbh; cin >> pil;
+                if (pil == 0) break;
+                if (pil > 0 && pil <= JM) {
+                    cout << "> Tambah Stok: "; cin >> tmbh;
+                    gds[pil-1].stk += tmbh;
                 }
-                else if (pilihAdmin == 2) {
-                    int topup;
-                    cout << "\nJumlah top up : ";
-                    cin >> topup;
-                    if (topup > 0) {
-                        saldoPembeli += topup;
-                        cout << "Top up berhasil!\n";
+            }
+        } 
+        else if (u == "Member" && p == "member123") {
+            while (true) {
+                system("cls");
+                cout << "========================================" << endl;
+                cout << "              MENU MEMBER               " << endl;
+                cout << "----------------------------------------" << endl;
+                cout << "Saldo Saat Ini: Rp " << fmt(sld) << endl;
+                cout << "----------------------------------------" << endl;
+                cout << "1. Belanja" << endl;
+                cout << "2. Top Up Saldo" << endl;
+                cout << "0. Log Out" << endl;
+                cout << "========================================" << endl;
+                cout << "> Pilih: "; int m_pil; cin >> m_pil;
+
+                if (m_pil == 0) break;
+
+                if (m_pil == 2) {
+                    int isi;
+                    cout << "\n> Masukkan Jumlah Top Up: Rp "; cin >> isi;
+                    sld += isi;
+                    cout << "[Sukses] Saldo berhasil ditambahkan!" << endl;
+                    system("pause"); continue;
+                }
+
+                if (m_pil == 1) {
+                    int kI[50], kQ[50], totI = 0, sub = 0;
+                    while (true) {
+                        system("cls");
+                        cout << "========================================" << endl;
+                        cout << "             DAFTAR BARANG              " << endl;
+                        cout << "----------------------------------------" << endl;
+                        cout << "Saldo      : Rp " << fmt(sld) << endl;
+                        cout << "Keranjang  : Rp " << fmt(sub) << endl;
+                        cout << "----------------------------------------" << endl;
+                        cout << left << setw(4) << "No" << setw(18) << "Item" << setw(12) << "Harga" << "Stok" << endl;
+                        cout << "----------------------------------------" << endl;
+                        for (int i = 0; i < JM; i++) {
+                            cout << left << setw(4) << i + 1 << setw(18) << gds[i].nm 
+                                 << "Rp " << setw(9) << fmt(gds[i].hrg) << gds[i].stk << endl;
+                        }
+                        cout << "========================================" << endl;
+                        cout << "[0] Selesai & Checkout" << endl;
+                        cout << "\n> Pilih Barang : "; int pil; cin >> pil;
+                        if (pil == 0) break;
+                        cout << "> Jumlah       : "; int q; cin >> q;
+
+                        int id = pil - 1;
+                        if (id >= 0 && id < JM && gds[id].stk >= q) {
+                            kI[totI] = id; kQ[totI] = q; totI++;
+                            sub += (gds[id].hrg * q);
+                            gds[id].stk -= q;
+                        } else { cout << "\n[Error] Stok kurang!" << endl; system("pause"); }
                     }
-                    system("pause");
-                }
 
-            } while (pilihAdmin != 3);
+                    if (totI > 0) {
+                        system("cls");
+                        cout << "========================================" << endl;
+                        cout << "             TOTAL KERANJANG            " << endl;
+                        cout << "----------------------------------------" << endl;
+                        cout << "Saldo      : Rp " << fmt(sld) << endl;
+                        cout << "----------------------------------------" << endl;
+                        cout << left << setw(4) << "No" << setw(15) << "Item" << setw(10) << "Harga" << setw(6) << "Qty" << "Total" << endl;
+                        for (int i = 0; i < totI; i++) {
+                            int id = kI[i];
+                            cout << left << setw(4) << i + 1 << setw(15) << gds[id].nm 
+                                 << "Rp " << setw(7) << fmt(gds[id].hrg) << "x" << setw(5) << kQ[i] 
+                                 << "Rp " << fmt(gds[id].hrg * kQ[i]) << endl;
+                        }
+                        cout << "========================================" << endl;
+                        cout << left << setw(31) << "Subtotal" << "Rp " << fmt(sub) << endl;
+                        cout << "========================================" << endl;
+                        cout << "\nKetik \"-\" jika tidak tahu Kode Promo." << endl;
+                        string promo; cout << "> Masukkan Kode Promo : "; cin >> promo;
+                        int uang; cout << "> Masukkan Uang       : Rp "; cin >> uang;
 
-            ulangLogin = 'y'; // 🔁 KEMBALI KE LOGIN
-            continue;
-        }
+                        int diskon = (promo == "HEMAT10") ? sub * 0.1 : 0;
+                        int ppn = (sub - diskon) * 0.11;
+                        int totTagihan = sub - diskon + ppn;
+                        
+                        // Perbaikan Logika Kembalian agar tidak minus
+                        int kemb = (uang >= totTagihan) ? (uang - totTagihan) : 0;
 
-        /* ===== PEMBELI ===== */
-        system("cls");
-        cout << "Nama Pembeli : ";
-        cin >> namaPembeli;
-        cout << "Saldo Anda   : Rp " << saldoPembeli << endl;
-        system("pause");
+                        if (sld >= totTagihan) {
+                            sld -= totTagihan;
+                            system("cls");
+                            cout << "========================================" << endl;
+                            cout << "              STRUK PESANAN             " << endl;
+                            cout << "      " << getT() << endl;
+                            cout << "\nNama       : " << pembeli << endl;
+                            cout << "Sisa Saldo : Rp " << fmt(sld) << endl;
+                            cout << "========================================" << endl;
+                            cout << left << setw(15) << "Item" << setw(10) << "Harga" << setw(6) << "Qty" << "Total" << endl;
+                            cout << "----------------------------------------" << endl;
+                            for (int i = 0; i < totI; i++) {
+                                int id = kI[i];
+                                cout << left << setw(15) << gds[id].nm << "Rp " << setw(7) << fmt(gds[id].hrg) 
+                                     << "x" << setw(5) << kQ[i] << "Rp " << fmt(gds[id].hrg * kQ[i]) << endl;
+                            }
+                            cout << "----------------------------------------" << endl;
+                            cout << left << setw(31) << "Subtotal" << "Rp " << fmt(sub) << endl;
+                            cout << left << setw(31) << "Diskon" << "Rp " << fmt(diskon) << endl;
+                            cout << left << setw(31) << "PPN (11%)" << "Rp " << fmt(ppn) << endl;
+                            cout << "========================================" << endl;
+                            cout << left << setw(31) << "TOTAL TAGIHAN" << "Rp " << fmt(totTagihan) << endl;
+                            cout << "----------------------------------------" << endl;
+                            cout << left << setw(31) << "Uang diterima" << "Rp " << fmt(uang) << endl;
+                            cout << "========================================" << endl;
 
-        int idx[50], qty[50];
-        int totalItem = 0;
-        int subtotal = 0;
-
-        system("cls");
-        garis();
-        cout << "        DAFTAR BARANG\n";
-        garis();
-
-        for (int i = 0; i < JUMLAH_BARANG; i++) {
-            cout << i + 1 << ". "
-                << daftarBarang[i].nama
-                << " Rp " << daftarBarang[i].harga << endl;
-        }
-        cout << "0. Checkout\n";
-        garis();
-
-        while (true) {
-            int pilih;
-            cout << "\nPilih Barang : ";
-            cin >> pilih;
-
-            if (pilih == 0) break;
-            if (pilih < 1 || pilih > JUMLAH_BARANG) continue;
-
-            int jumlah;
-            cout << "Jumlah : ";
-            cin >> jumlah;
-            if (jumlah <= 0) continue;
-
-            int index = pilih - 1;
-            bool ada = false;
-
-            for (int i = 0; i < totalItem; i++) {
-                if (idx[i] == index) {
-                    qty[i] += jumlah;
-                    ada = true;
-                    break;
+                            // SISTEM DIVMOD KEMBALIAN (TETAP ADA)
+                            int sisa = kemb;
+                            int pec[] = {100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100};
+                            if (kemb == 0) {
+                                cout << right << setw(37) << "Rp 0" << endl;
+                            } else {
+                                for (int i = 0; i < 10; i++) {
+                                    int jml = sisa / pec[i];
+                                    sisa = sisa % pec[i];
+                                    if (jml > 0) {
+                                        cout << right << setw(34) << "Rp " << fmt(pec[i] * jml) << endl;
+                                    }
+                                }
+                            }
+                            cout << left << setw(31) << "Total Kembalian" << "Rp " << fmt(kemb) << endl;
+                            cout << "========================================" << endl;
+                        } else { cout << "\n[Gagal] Saldo Member tidak cukup!" << endl; }
+                        system("pause");
+                    }
                 }
             }
-
-            if (!ada) {
-                idx[totalItem] = index;
-                qty[totalItem] = jumlah;
-                totalItem++;
-            }
-
-            subtotal += daftarBarang[index].harga * jumlah;
-        }
-
-        if (totalItem == 0) {
-            cout << "Tidak ada transaksi.\n";
-            break;
-        }
-
-        system("cls");
-        garis();
-        cout << "RINGKASAN BELANJA\n";
-        garis();
-
-        for (int i = 0; i < totalItem; i++) {
-            cout << daftarBarang[idx[i]].nama
-                << " x" << qty[i]
-                << " = Rp " << daftarBarang[idx[i]].harga * qty[i] << endl;
-        }
-
-        int diskon = 0;
-        string kode;
-        cout << "\nKode Diskon (HEMAT10 / -) : ";
-        cin >> kode;
-        if (kode == "HEMAT10") diskon = subtotal * 0.1;
-
-        int setelahDiskon = subtotal - diskon;
-        int pajak = setelahDiskon * PPN;
-        int total = setelahDiskon + pajak;
-
-        garis();
-        cout << "Subtotal : Rp " << subtotal << endl;
-        cout << "Diskon   : Rp " << diskon << endl;
-        cout << "PPN 11%  : Rp " << pajak << endl;
-        cout << "TOTAL    : Rp " << total << endl;
-        garis();
-
-        if (saldoPembeli < total) {
-            cout << "Saldo tidak cukup!\n";
-            break;
-        }
-
-        saldoPembeli -= total;
-
-        cetakStruk(namaPembeli, idx, qty, totalItem,
-            subtotal, diskon, pajak, total, saldoPembeli);
-
-        break; // selesai belanja → keluar program
-
-    } while (true);
-
+        } else { cout << "\n[Error] Password Salah!" << endl; system("pause"); }
+    }
     return 0;
 }
-
-
