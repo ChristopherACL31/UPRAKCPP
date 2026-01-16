@@ -11,14 +11,12 @@ struct Item {
     int hrg, stk;
 };
 
-// Data Barang sesuai Screenshot
 Item gds[] = {
     {"Aqua 600ml", 5000, 14}, {"Roti", 7000, 15}, {"Indomie", 3500, 40},
     {"Chitato", 12000, 50}, {"Teh Botol", 6000, 52}, {"Susu UHT", 8000, 52}
 };
 const int JM = 6;
 
-// Fungsi Format Titik (Ribuan, Jutaan, dst)
 string fmt(int n) {
     string s = to_string(n);
     int pos = s.length() - 3;
@@ -72,10 +70,20 @@ int main() {
                     cout << left << setw(4) << i+1 << setw(18) << gds[i].nm << gds[i].stk << endl;
                 cout << "----------------------------------------" << endl;
                 cout << "[0] Log Out\n> Pilih No Barang: ";
-                int pil, tmbh; cin >> pil;
+                int pil, tmbh; 
+                if (!(cin >> pil)) {
+                    cout << "\n[Error] Input harus angka!" << endl;
+                    cin.clear(); cin.ignore(1000, '\n');
+                    system("pause"); continue;
+                }
                 if (pil == 0) break;
                 if (pil > 0 && pil <= JM) {
-                    cout << "> Tambah Stok: "; cin >> tmbh;
+                    cout << "> Tambah Stok: "; 
+                    if (!(cin >> tmbh)) {
+                        cout << "\n[Error] Input stok harus angka!" << endl;
+                        cin.clear(); cin.ignore(1000, '\n'); 
+                        system("pause"); continue;
+                    }
                     gds[pil-1].stk += tmbh;
                 }
             }
@@ -95,7 +103,6 @@ int main() {
                 cout << "> Pilih: "; int m_pil; cin >> m_pil;
 
                 if (m_pil == 0) break;
-
                 if (m_pil == 2) {
                     int isi;
                     cout << "\n> Masukkan Jumlah Top Up: Rp "; cin >> isi;
@@ -151,16 +158,48 @@ int main() {
                         cout << "========================================" << endl;
                         cout << left << setw(31) << "Subtotal" << "Rp " << fmt(sub) << endl;
                         cout << "========================================" << endl;
-                        cout << "\nKetik \"-\" jika tidak tahu Kode Promo." << endl;
-                        string promo; cout << "> Masukkan Kode Promo : "; cin >> promo;
-                        int uang; cout << "> Masukkan Uang       : Rp "; cin >> uang;
-
-                        int diskon = (promo == "HEMAT10") ? sub * 0.1 : 0;
-                        int ppn = (sub - diskon) * 0.11;
-                        int totTagihan = sub - diskon + ppn;
                         
-                        // Perbaikan Logika Kembalian agar tidak minus
-                        int kemb = (uang >= totTagihan) ? (uang - totTagihan) : 0;
+                        string promo; 
+                        int uang, totTagihan, diskon, ppn;
+
+                        cout << "\nKetik \"-\" jika tidak tahu Kode Promo." << endl;
+                        cout << "> Masukkan Kode Promo : "; cin >> promo;
+                        
+                        // PERBAIKAN 1: Validasi Kode Promo
+                        if (promo == "HEMAT10") {
+                            diskon = sub * 0.1;
+                            cout << "[Sukses] Promo HEMAT10 berhasil dipasang." << endl;
+                        } else if (promo == "-") {
+                            diskon = 0;
+                        } else {
+                            diskon = 0;
+                            cout << "[Error] Kode Promo \"" << promo << "\" tidak valid!" << endl;
+                        }
+
+                        ppn = (sub - diskon) * 0.11;
+                        totTagihan = sub - diskon + ppn;
+
+                        // PERBAIKAN 2: Tampilkan total riil (biar tidak bingung kenapa nominalnya besar)
+                        cout << "----------------------------------------" << endl;
+                        cout << "PPN (11%)     : Rp " << fmt(ppn) << endl;
+                        cout << "TOTAL TAGIHAN : Rp " << fmt(totTagihan) << endl;
+                        cout << "----------------------------------------" << endl;
+
+                        while (true) {
+                            cout << "> Masukkan Uang       : Rp "; 
+                            if (!(cin >> uang)) {
+                                cout << "\n[Error] Input harus angka!" << endl;
+                                cin.clear(); cin.ignore(1000, '\n'); continue;
+                            }
+
+                            if (uang < totTagihan) {
+                                cout << "\n[Error] Uang anda kurang Rp " << fmt(totTagihan - uang) << "!" << endl;
+                            } else {
+                                break; 
+                            }
+                        }
+
+                        int kemb = uang - totTagihan;
 
                         if (sld >= totTagihan) {
                             sld -= totTagihan;
@@ -188,7 +227,6 @@ int main() {
                             cout << left << setw(31) << "Uang diterima" << "Rp " << fmt(uang) << endl;
                             cout << "========================================" << endl;
 
-                            // SISTEM DIVMOD KEMBALIAN (TETAP ADA)
                             int sisa = kemb;
                             int pec[] = {100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100};
                             if (kemb == 0) {
@@ -204,7 +242,10 @@ int main() {
                             }
                             cout << left << setw(31) << "Total Kembalian" << "Rp " << fmt(kemb) << endl;
                             cout << "========================================" << endl;
-                        } else { cout << "\n[Gagal] Saldo Member tidak cukup!" << endl; }
+                        } else { 
+                            cout << "\n[Gagal] Saldo Member tidak cukup!" << endl; 
+                            for(int i=0; i<totI; i++) gds[kI[i]].stk += kQ[i];
+                        }
                         system("pause");
                     }
                 }
