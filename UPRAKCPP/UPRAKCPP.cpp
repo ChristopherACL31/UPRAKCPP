@@ -36,7 +36,8 @@ string getT() {
 }
 
 int main() {
-    string pembeli = "chris";
+    // Variabel pembeli dikosongkan agar dinamis
+    string pembeli = ""; 
     int sld = 603275; 
     
     while (true) {
@@ -112,12 +113,16 @@ int main() {
                 }
 
                 if (m_pil == 1) {
+                    // INPUT NAMA PEMBELI SECARA DINAMIS
+                    cout << "> Masukkan Nama Pembeli: "; cin >> pembeli;
+                    
                     int kI[50], kQ[50], totI = 0, sub = 0;
                     while (true) {
                         system("cls");
                         cout << "========================================" << endl;
                         cout << "             DAFTAR BARANG              " << endl;
                         cout << "----------------------------------------" << endl;
+                        cout << "Pembeli    : " << pembeli << endl;
                         cout << "Saldo      : Rp " << fmt(sld) << endl;
                         cout << "Keranjang  : Rp " << fmt(sub) << endl;
                         cout << "----------------------------------------" << endl;
@@ -160,29 +165,29 @@ int main() {
                         cout << "========================================" << endl;
                         
                         string promo; 
-                        int uang, totTagihan, diskon, ppn;
+                        int uang, totTagihan, diskon = 0, ppn;
 
-                        cout << "\nKetik \"-\" jika tidak tahu Kode Promo." << endl;
-                        cout << "> Masukkan Kode Promo : "; cin >> promo;
-                        
-                        // PERBAIKAN 1: Validasi Kode Promo
-                        if (promo == "HEMAT10") {
-                            diskon = sub * 0.1;
-                            cout << "[Sukses] Promo HEMAT10 berhasil dipasang." << endl;
-                        } else if (promo == "-") {
-                            diskon = 0;
-                        } else {
-                            diskon = 0;
-                            cout << "[Error] Kode Promo \"" << promo << "\" tidak valid!" << endl;
+                        // TINDAKAN JIKA KODE PROMO SALAH
+                        while (true) {
+                            cout << "\nKetik \"-\" jika tidak tahu Kode Promo." << endl;
+                            cout << "> Masukkan Kode Promo : "; cin >> promo;
+                            if (promo == "HEMAT10") {
+                                diskon = sub * 0.1; break;
+                            } else if (promo == "-") {
+                                diskon = 0; break;
+                            } else {
+                                cout << "[Error] Kode Promo \"" << promo << "\" salah atau tidak berlaku!" << endl;
+                            }
                         }
-
+                        
                         ppn = (sub - diskon) * 0.11;
                         totTagihan = sub - diskon + ppn;
 
-                        // PERBAIKAN 2: Tampilkan total riil (biar tidak bingung kenapa nominalnya besar)
+                        // MENAMPILKAN TOTAL SEBENARNYA (PPN) SEBELUM BAYAR
                         cout << "----------------------------------------" << endl;
-                        cout << "PPN (11%)     : Rp " << fmt(ppn) << endl;
-                        cout << "TOTAL TAGIHAN : Rp " << fmt(totTagihan) << endl;
+                        cout << left << setw(31) << "Diskon" << "Rp " << fmt(diskon) << endl;
+                        cout << left << setw(31) << "PPN (11%)" << "Rp " << fmt(ppn) << endl;
+                        cout << left << setw(31) << "TOTAL TAGIHAN" << "Rp " << fmt(totTagihan) << endl;
                         cout << "----------------------------------------" << endl;
 
                         while (true) {
@@ -191,7 +196,6 @@ int main() {
                                 cout << "\n[Error] Input harus angka!" << endl;
                                 cin.clear(); cin.ignore(1000, '\n'); continue;
                             }
-
                             if (uang < totTagihan) {
                                 cout << "\n[Error] Uang anda kurang Rp " << fmt(totTagihan - uang) << "!" << endl;
                             } else {
@@ -207,7 +211,7 @@ int main() {
                             cout << "========================================" << endl;
                             cout << "              STRUK PESANAN             " << endl;
                             cout << "      " << getT() << endl;
-                            cout << "\nNama       : " << pembeli << endl;
+                            cout << "\nNama       : " << pembeli << endl; // Nama Dinamis
                             cout << "Sisa Saldo : Rp " << fmt(sld) << endl;
                             cout << "========================================" << endl;
                             cout << left << setw(15) << "Item" << setw(10) << "Harga" << setw(6) << "Qty" << "Total" << endl;
