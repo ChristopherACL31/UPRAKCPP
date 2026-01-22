@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -47,7 +47,7 @@ string date() {
 int main() {
     string pembeli = "";
     int saldo = 0;
-
+    
 
 
     while (true) {
@@ -61,7 +61,7 @@ int main() {
         cout << "========================================" << endl;
         cout << "[0] Keluar" << endl;
         cout << "========================================" << endl;
-
+        
         string user, pass;
 
         cout << "\n> Username : "; cin >> user;
@@ -72,7 +72,7 @@ int main() {
             cout << "\n[Error] User tidak ditemukan!" << endl;
 
             system("pause");
-            continue;
+            continue; 
         }
 
         cout << "> Password : "; cin >> pass;
@@ -86,7 +86,7 @@ int main() {
                 cout << "----------------------------------------" << endl;
                 cout << left << setw(5) << "No" << setw(30) << "Item" << "Stok" << endl;
                 cout << "----------------------------------------" << endl;
-                for (int i = 0; i < jmlItem; i++)
+                for (int i = 0; i < jmlItem; i++) 
                 cout << left << "[" << i + 1 << setw(3) << "]" << setw(30) << listItem[i].nm << listItem[i].stk << endl;
                 cout << "========================================" << endl;
                 cout << "[0]  Log Out\n\n";
@@ -106,12 +106,12 @@ int main() {
                 if (pilih == 0) break;
 
                 if (pilih > 0 && pilih <= jmlItem) {
-                    cout << "> Tambah Stok : ";
+                    cout << "> Tambah Stok : "; 
                     if (!(cin >> tmbh)) {
                         cout << "\n[Error] Input stok harus angka!" << endl;
 
                         cin.clear();
-                        cin.ignore(1000, '\n');
+                        cin.ignore(1000, '\n'); 
                         system("pause");
 
                         continue;
@@ -151,7 +151,7 @@ int main() {
                     // INPUT NAMA PEMBELI SECARA DINAMIS
                     cout << "> Masukkan Nama Pembeli : ";
                     cin >> pembeli;
-
+                    
                     int kI[50], kQ[50], totI = 0, sub = 0;
                     while (true) {
 
@@ -184,7 +184,7 @@ int main() {
                             listItem[id].stk -= q;
 
                         } else {
-
+                            
                             cout << "\n[Error] Stok kurang!" << endl; system("pause"); }
                     }
 
@@ -205,8 +205,8 @@ int main() {
                         cout << "========================================" << endl;
                         cout << left << setw(31) << "Subtotal" << "Rp " << fmt(sub) << endl;
                         cout << "========================================" << endl;
-
-                        string promo;
+                        
+                        string promo; 
                         int uang, totTagihan, diskon = 0, ppn;
 
                         // TINDAKAN JIKA KODE PROMO SALAH
@@ -226,7 +226,7 @@ int main() {
                                 cout << "[Error] Kode Promo \"" << promo << "\" salah atau tidak berlaku!" << endl;
                             }
                         }
-
+                        
                         ppn = (sub - diskon) * 0.11;
                         totTagihan = sub - diskon + ppn;
 
@@ -238,7 +238,7 @@ int main() {
                         cout << "----------------------------------------" << endl;
 
                         while (true) {
-                            cout << "> Masukkan Uang       : Rp ";
+                            cout << "> Masukkan Uang       : Rp "; 
 
                             if (!(cin >> uang)) {
                                 cout << "\n[Error] Input harus angka!" << endl;
@@ -250,7 +250,7 @@ int main() {
 
                             } else {
 
-                                break;
+                                break; 
                             }
                         }
 
@@ -299,17 +299,18 @@ int main() {
                                 50,
                                 20,
                                 10};
+                            int jmlPecahan = sizeof(pec) / sizeof(pec[0]);
 
                             if (kembali == 0) {
                                 cout << right << setw(37) << "Rp 0" << endl;
 
                             } else {
 
-                                for (int i = 0; i < 10; i++) {
+                                for (int i = 0; i < jmlPecahan; i++) {
                                     int jml = sisa / pec[i];
-                                    sisa = sisa % pec[i];
 
                                     if (jml > 0) {
+                                        sisa = sisa % pec[i];
                                         cout << right << setw(34) << "Rp " << fmt(pec[i] * jml) << endl;
                                     }
                                 }
@@ -317,9 +318,9 @@ int main() {
                             cout << left << setw(31) << "Total Kembalian" << "Rp " << fmt(kembali) << endl;
                             cout << "========================================" << endl;
 
-                        } else {
+                        } else { 
 
-                            cout << "\n[Gagal] Saldo Member tidak cukup!" << endl;
+                            cout << "\n[Gagal] Saldo Member tidak cukup!" << endl; 
                             for(int i=0; i<totI; i++) listItem[kI[i]].stk += kQ[i];
                         }
                         system("pause");
@@ -327,7 +328,7 @@ int main() {
                 }
             }
         } else { cout << "\n[Error] Password Salah!" << endl;
-            system("pause");
+            system("pause"); 
         }
     }
     return 0;
