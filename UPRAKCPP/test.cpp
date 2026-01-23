@@ -53,8 +53,8 @@ int main() {
             cout << "===================================" << endl;
             cout << "               LOGIN" << endl;
             cout << "-----------------------------------" << endl;
-            cout << "> Admin" << endl;
-            cout << "> Member" << endl;
+            cout << " - Admin" << endl;
+            cout << " - Member" << endl;
             cout << "===================================" << endl;
             cout << "[0] Exit\n" << endl;
             if (attempt > 0) {
@@ -78,11 +78,11 @@ int main() {
             if (user == "Admin" && pass == "a123") {
                 verified = true;
                 break; // Login Berhasil, keluar dari loop percobaan
-            } 
+            }
             else if (user == "Member" && pass == "m123") {
                 verified = true;
                 break; // Login Berhasil
-            } 
+            }
             else {
                 attempt++;
                 cout << "\n[Failed] Password is wrong!" << endl;
@@ -90,18 +90,19 @@ int main() {
                 system("pause");
             }
         }
+
         if (!verified) {
             system("cls");
             cout << "========================================" << endl;
             cout << "            ACCESS DENIED!              " << endl;
             cout << "----------------------------------------" << endl;
-            cout << "YOU have been enter 3 WRONG ATTEMPT." << endl;
-            cout << "GOODBYE Strangers..." << endl;
+            cout << " YOU have been enter 3 WRONG ATTEMPT." << endl;
+            cout << " GOODBYE Strangers..." << endl;
             cout << "========================================" << endl;
             system("pause");
             continue; // Kembali ke awal while(true) utama
         }
-        
+
         if (user == "Admin") {
             while(true) {
                 system("cls");
@@ -115,7 +116,7 @@ int main() {
                 }
                 cout << "===================================" << endl;
                 cout << "[0] Logout\n" << endl;
-                
+
                 cout << "You can enter these item number\nto add an stock on it.\nOr enter \"0\" to Logout!\n" << endl;
                 cout << "> Enter Selection : ";
                 int enter, add;
@@ -149,13 +150,15 @@ int main() {
                     continue;
                 }
             }
-        } else if (user == "Member") {
+        }
+
+        else if (user == "Member") {
             while(true) {
                 system("cls");
                 cout << "===================================" << endl;
                 cout << "            MEMBER MENU" << endl;
                 cout << "-----------------------------------" << endl;
-                cout <<  "Balance : Rp " << rp(balance) << endl;
+                cout << "Balance : Rp " << rp(balance) << endl;
                 cout << "-----------------------------------" << endl;
                 cout << "[1] Go to Store" << endl;
                 cout << "[2] Add Balance" << endl;
@@ -201,7 +204,10 @@ int main() {
                 }
 
                 if (memMenu == 1) {
-                    cout << "> Enter Name      : "; int memName; cin >> memName;
+                    cin.ignore();
+                    cout << "> Enter Name      : ";
+                    string memName;
+                    getline(cin, memName);
 
                     int Item[50], Qty[50], totalItem = 0, subTotal = 0;
                     while(true) {
@@ -209,9 +215,9 @@ int main() {
                         cout << "==============================================" << endl;
                         cout << "                DAFTAR BARANG                 " << endl;
                         cout << "----------------------------------------------" << endl;
-                        cout << "Nama       : " << memName << endl;
-                        cout << "Saldo      : Rp " << rp(balance) << endl;
-                        cout << "Keranjang  : Rp " << rp(subTotal) << endl;
+                        cout << "Name     : " << memName << endl;
+                        cout << "Balance  : Rp " << rp(balance) << endl;
+                        cout << "Cart     : Rp " << rp(subTotal) << endl;
                         cout << "----------------------------------------------" << endl;
                         cout << left << setw(5) << "No" << setw(23) << "Item" << setw(14) << "Harga" << "Stok" << endl;
                         cout << "----------------------------------------------" << endl;
@@ -236,10 +242,119 @@ int main() {
                             listItem[id].stk -= qty;
 
                         } else {
-                            
+
                             cout << "\n[Error] The stock isn't enough!!" << endl;
                             system("pause");
                         }
+                    }
+                    if (totalItem > 0) {
+                        system("cls");
+                        cout << "==============================================" << endl;
+                        cout << "                  TOTAL CART                " << endl;
+                        cout << "----------------------------------------------" << endl;
+                        cout << "Name     : " << memName << endl;
+                        cout << "Balance  : Rp " << rp(balance) << endl;
+                        cout << "----------------------------------------------" << endl;
+                        cout << left << setw(5) << "No" << setw(23) << "Item" << setw(14) << "Price" << setw(6) << "Qty" << "Total" << endl;
+                        cout << "----------------------------------------------" << endl;
+                        for (int i = 0; i < totalItem; i++) {
+                            int id = Item[i];
+                            cout << left << setw(4) << i + 1 << setw(23) << listItem[id].nm << "Rp " << setw(11) << rp(listItem[id].hrg) << "x" << setw(6) << Qty[i] << "Rp " << rp(listItem[id].hrg * Qty[i]) << endl;
+                        }
+                        cout << "==============================================" << endl;
+                        cout << left << setw(31) << "Subtotal" << "Rp " << rp(subTotal) << endl;
+                        cout << "==============================================" << endl;
+
+                        string promo;
+                        int money, total, disc = 0, ppn;
+
+                        // TINDAKAN JIKA KODE PROMO SALAH
+                        while (true) {
+                            cout << "Type \"-\" if you didnt know the Promo code." << endl;
+                            cout << "> Enter promo code : "; cin >> promo;
+
+                            if (promo == "HEMAT10") {
+                                disc = subTotal * 0.1; break;
+
+                            } else if (promo == "-") {
+
+                                disc = 0; break;
+
+                            } else {
+
+                                cout << "[Error] Kode Promo \"" << promo << "\" salah atau tidak berlaku!" << endl;
+                            }
+                        }
+
+                        ppn = (subTotal - disc) * 0.11;
+                        total = subTotal - disc + ppn;
+
+                        // MENAMPILKAN TOTAL SEBENARNYA (PPN) SEBELUM BAYAR
+                        cout << "----------------------------------------------" << endl;
+                        cout << left << setw(31) << "DISCOUNT" << "Rp " << rp(disc) << endl;
+                        cout << left << setw(31) << "PPN (11%)" << "Rp " << rp(ppn) << endl;
+                        cout << left << setw(31) << "TOTAL" << "Rp " << rp(total) << endl;
+                        cout << "----------------------------------------------" << endl;
+
+                        while (true) {
+                            cout << "> Enter your money  : Rp ";
+
+                            if (!(cin >> money)) {
+                                cout << "\n[Error] Input must be Number!" << endl;
+                                cin.clear();
+                                cin.ignore(1000, '\n');
+                                system("pause");
+                                continue;
+                            }
+
+                            if (money < total) {
+                                cout << "\n[Error] Uang anda kurang Rp " << rp(total - money) << "!" << endl;
+
+                            } else {
+
+                                break;
+                            }
+                        }
+
+                        int change = money - total;
+
+                        if (balance >= total) {
+                            balance -= total;
+                            system("cls");
+                            cout << "========================================" << endl;
+                            cout << "              STRUK PESANAN             " << endl;
+                            cout << "      " << date() << endl;
+                            cout << "\nNama       : " << memName << endl; // Nama Dinamis
+                            cout << "Sisa Saldo : Rp " << rp(balance) << endl;
+                            cout << "========================================" << endl;
+                            cout << left << setw(15) << "Item" << setw(10) << "Harga" << setw(6) << "Qty" << "Total" << endl;
+                            cout << "----------------------------------------" << endl;
+
+                            for (int no = 0; no < totalItem; no++) {
+                                int id = Item[no];
+
+                                cout << left << setw(15) << listItem[id].nm << "Rp " << setw(7) << rp(listItem[id].hrg) << "x" << setw(5) << Qty[no] << "Rp " << rp(listItem[id].hrg * Qty[no]) << endl;
+                            }
+
+                            cout << "----------------------------------------" << endl;
+                            cout << left << setw(31) << "Subtotal" << "Rp " << rp(subTotal) << endl;
+                            cout << left << setw(31) << "Diskon" << "Rp " << rp(disc) << endl;
+                            cout << left << setw(31) << "PPN (11%)" << "Rp " << rp(ppn) << endl;
+                            cout << "========================================" << endl;
+                            cout << left << setw(31) << "TOTAL TAGIHAN" << "Rp " << rp(total) << endl;
+                            cout << "----------------------------------------" << endl;
+                            cout << left << setw(31) << "Uang diterima" << "Rp " << rp(money) << endl;
+                            cout << "========================================" << endl;
+                            cout << left << setw(31) << "Total Kembalian" << "Rp " << rp(change) << endl;
+                            cout << "========================================" << endl;
+
+                        } else {
+
+                            cout << "\n[Gagal] Saldo Member tidak cukup!" << endl;
+                            for (int no = 0; no < totalItem; no++)
+                            listItem[Item[no]].stk += Qty[no];
+                        }
+                        system("pause");
                     }
                 }
             }
